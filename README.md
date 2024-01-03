@@ -3,7 +3,9 @@
 
   ## Description
 
-  This project allows users to save notes on a convenient online  platform. 
+  This project allows users to save notes on a convenient online platform. 
+
+  Check it out here: https://note-tracker-8y7i.onrender.com/
 
   Technologies Used: 
   1. node.js
