@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
+const notes = require('./public/assets/db/notes.json');
+console.log("NOTES HERE: ", notes)
 
 const PORT = process.env.PORT || 3001;
 //const noteData = require('./db/notes.json');
@@ -21,55 +23,29 @@ app.get('/notes', (req, res) =>
 );
 
 app.get('/api/notes', (req, res) => {
-  console.info(`${req.method} request received to get notes`);
-  fs.readFile(`./public/assets/db/notes.json`, (err) =>
-    err
-      ? console.error(err)
-      : console.log(
-        `Notes HERE`
-      )).then(notes => {
-        console.log(notes)
-        if (typeof notes == null) {
-          notes = [];
-        }
-        //json parse new object onto existing
-        let notesArr = JSON.parse(notes);
-        //pushing new review to array
-        console.log("HERE", notesArr);
-        res.json(notesArr);
-      })
+  console.info(`${req.method} request received to see current notes`);
+  res.json(notes);
 });
 
 app.post('/api/notes', (req, res) => {
   console.info(`${req.method} request received to add a new note`);
+  //Initializations for New Note
   let newNote = req.body;
-  let currTime = (new Date()).valueOf();
-  console.log(currTime)
   newNote.id = (new Date()).valueOf();
   console.log("Note: ", newNote);
-  fs.readFile(`./public/assets/db/notes.json`, (err) =>
-    err
-      ? console.error(err)
-      : console.log(
-        `Notes HERE`
-      )).then(notes => {
-        console.log(notes)
-        if (typeof notes == null) {
-          notes = [];
-        }
-        //json parse new object onto existing
-        let notesArr = JSON.parse(notes);
-        //pushing new review to array
-        console.log("HERE", notesArr);
-        notesArr.push(newNote);
-        let notesJSON = JSON.stringify(notesArr)
-        fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
-          err
-            ? console.error(err)
-            : console.log(
-              `Note has been written to JSON file`
-            ))
-        res.json(notesArr);
-      })
+
+  let notesArr = notes;
+  if (typeof notesArr == null) {
+    notesArr = [];
+  }
+  notesArr.push(newNote)
+  let notesJSON = JSON.stringify(notesArr);
+  fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
+  err
+    ? console.error(err)
+    : console.log(
+      `Note has been written to JSON file`
+    ))
+  res.json(notesArr)
 });
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
