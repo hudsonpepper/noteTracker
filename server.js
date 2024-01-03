@@ -42,7 +42,11 @@ app.get('/api/notes', (req, res) => {
 
 app.post('/api/notes', (req, res) => {
   console.info(`${req.method} request received to add a new note`);
-  console.log("Note: ", req.body);
+  let newNote = req.body;
+  let currTime = (new Date()).valueOf();
+  console.log(currTime)
+  newNote.id = (new Date()).valueOf();
+  console.log("Note: ", newNote);
   fs.readFile(`./public/assets/db/notes.json`, (err) =>
     err
       ? console.error(err)
@@ -57,7 +61,7 @@ app.post('/api/notes', (req, res) => {
         let notesArr = JSON.parse(notes);
         //pushing new review to array
         console.log("HERE", notesArr);
-        notesArr.push(req.body);
+        notesArr.push(newNote);
         let notesJSON = JSON.stringify(notesArr)
         fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
           err
