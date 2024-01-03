@@ -41,11 +41,36 @@ app.post('/api/notes', (req, res) => {
   notesArr.push(newNote)
   let notesJSON = JSON.stringify(notesArr);
   fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
-  err
-    ? console.error(err)
-    : console.log(
-      `Note has been written to JSON file`
-    ))
+    err
+      ? console.error(err)
+      : console.log(
+        `Note has been written to JSON file`
+      ))
   res.json(notesArr)
 });
+
+app.delete('/api/notes/:id', (req, res) => {
+  const reqID = req.params.id;
+  console.log("REQ ID: ", reqID);
+  let notesArr = notes;
+  for (let i = 0; i < notes.length; i++) {
+    if (reqID == notes[i].id) {
+      console.log("match found")
+      notesArr = notesArr.splice(i, 1);
+      let notesJSON = JSON.stringify(notesArr)
+      fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
+        err
+          ? console.error(err)
+          : console.log(
+            `Note has been written to JSON file`
+          ))
+      return res.json(notesArr)
+    }
+  }
+  console.log("no match found");
+  return res.json("no match found")
+})
+
+
+
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
