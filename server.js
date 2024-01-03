@@ -2,10 +2,8 @@ const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
 const notes = require('./public/assets/db/notes.json');
-console.log("NOTES HERE: ", notes)
 
 const PORT = process.env.PORT || 3001;
-//const noteData = require('./db/notes.json');
 const app = express();
 
 app.use(express.json());
@@ -18,56 +16,55 @@ app.get('/', (req, res) =>
   res.sendFile(path.join(__dirname, './public/index.html'))
 );
 
+// GET Route to notes page
 app.get('/notes', (req, res) =>
   res.sendFile(path.join(__dirname, './public/notes.html'))
 );
 
+// GET handling for past notes
 app.get('/api/notes', (req, res) => {
-  console.info(`${req.method} request received to see current notes`);
   res.json(notes);
 });
-
+// POST handling for new notes
 app.post('/api/notes', (req, res) => {
-  console.info(`${req.method} request received to add a new note`);
   //Initializations for New Note
   let newNote = req.body;
+  // note: id is unix timestamp of initialization
   newNote.id = (new Date()).valueOf();
-  console.log("Note: ", newNote);
 
+  // Initializations for db call
   let notesArr = notes;
   if (typeof notesArr == null) {
     notesArr = [];
   }
+
+  // Adds new note to notesArr and pushees it to the database
   notesArr.push(newNote)
   let notesJSON = JSON.stringify(notesArr);
   fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
     err
       ? console.error(err)
-      : console.log(
-        `Note has been written to JSON file`
-      ))
+      : null
+      )
   res.json(notesArr)
 });
 
+// DELETE Btn Handling
 app.delete('/api/notes/:id', (req, res) => {
   const reqID = req.params.id;
-  console.log("REQ ID: ", reqID);
   let notesArr = notes;
   for (let i = 0; i < notes.length; i++) {
     if (reqID == notes[i].id) {
-      console.log("match found")
+      // Removes matching id from db
       notesArr = notesArr.splice(i, 1);
       let notesJSON = JSON.stringify(notesArr)
       fs.writeFile(`./public/assets/db/notes.json`, notesJSON, (err) =>
         err
-          ? console.error(err)
-          : console.log(
-            `Note has been written to JSON file`
-          ))
+          ? console.error(err):null
+      )
       return res.json(notesArr)
     }
   }
-  console.log("no match found");
   return res.json("no match found")
 })
 

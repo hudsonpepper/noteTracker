@@ -76,6 +76,8 @@ body {
   padding: 20px;
   cursor: pointer;
 }
+
+/* Ensures Notes are Listed Newest to Oldest */
 #list-group {
   display: flex;
   flex-direction: column-reverse;
